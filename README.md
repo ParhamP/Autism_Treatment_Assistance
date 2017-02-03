@@ -49,9 +49,9 @@ Uses matplotlib and numpy libraries to draw statistical and graphical representa
 
 ### Dependencies
 
-- IBM Watson Speech to Text API Username and Password (Here)
-- IBM Watson Tone Analyzer API Username and Passowrd (Here)
-- Microsoft Emotion API Key (Here)
+- IBM Watson Speech to Text API Username and Password: [Here](https://www.ibm.com/watson/developercloud/doc/getting_started/gs-credentials.shtml> "IBM_GetStarted")
+- IBM Watson Tone Analyzer API Username and Passowrd: [Here](https://console.ng.bluemix.net/registration/?target=/catalog/services/tone-analyzer/> "IBM_GetStarted")
+- Microsoft Emotion API Key: [Here](https://www.microsoft.com/cognitive-services/en-us/sign-up> "Microsoft_GetStarted")
 - SimpleAudioIndexer
 - matplotlib
 - numpy
