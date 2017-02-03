@@ -65,13 +65,19 @@ Uses matplotlib and numpy libraries to draw statistical and graphical representa
 
 Have your therapy video and API keys ready.
 
-1- Just for the first time let the program (using ConfigParser) save your API credentials so you don't have to enter them each time. (Preserve the order and place them in a string)
+## 1.
+
+Just for the first time let the program (using ConfigParser) save your API credentials so you don't have to enter them each time. (Preserve the order and place them in a string)
 
 `ata -credentials "IBM_USERNAME IBM_PASSWORD IBM_TONE_USERNAME IBM_TONE_PASSWORD Microsfot_API_KEY"`
 
-2- `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
+## 2.
 
-3- A folder named ATA containing the analysis and gaphs is created in the destination that you chose.
+`ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
+
+## 3.
+
+A folder named ATA containing the analysis and gaphs is created in the destination that you chose.
 
 ## Samples
 
