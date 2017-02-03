@@ -81,3 +81,17 @@ Have your therapy video and API keys ready.
 <img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/general_data.png?raw=true">
 <img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/emotions_matched.png?raw=true">
 </p>
+
+## History
+
+Originally a hackathon project at PennApps, University of Pennsylvania Winter 2017. Link to original project at Devpost: (Here)
+
+## Future of ATA
+
+This project is still under improvement. The author is trying to work with an actuall psychologist to improve the program.
+
+## Thanks
+
+I thank the people who conributed code and/or ideas:
+
+@aalireza
