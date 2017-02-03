@@ -91,7 +91,7 @@ Originally a hackathon project at PennApps, University of Pennsylvania, Winter 2
 
 ## Future of ATA
 
-This project is still under improvement. The author is trying to collaborate with an actuall psychologist to improve the application.
+This project is still under improvement. The author is trying to collaborate with an actuall psychologist to improve the application and make it more relevant to standard pyschology practices and therapies on autism.
 
 ## Thanks
 
