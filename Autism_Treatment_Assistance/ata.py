@@ -919,30 +919,61 @@ if __name__ == '__main__':
 
     else:
 
+        # Return the result from argparse_handler and assign them
+
         IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME, TONE_PASSWORD, Microsfot_API_KEY = ConnfigParser_reader(cred_path)
+
+        # Generate the final model using generator function
 
         result = generator(src_vid, IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
                            TONE_PASSWORD, Microsfot_API_KEY)
+
+        # Change the model using and make it ready for analyzing
 
         final_an = final_analysis(result)
 
         final_result = get_analysis(final_an)
 
+
+        # Set the path where we export the result to
+
         ata_path = os.path.join(destination, "ATA")
+
+        # Create suffix for path folder in case one exists
+
+        folder_suffix = 0
+
+        # Increment the suffix while a foder with the same name exists
+
+        while os.path.exists(ata_path + str(folder_suffix)):
+            folder_suffix += 1
+
+        ata_path = os.path.join(destination, "ATA{}".format(folder_suffix))
+
+        # Finaly create the folder
 
         os.mkdir(ata_path)
 
-        pie_path = os.path.join(ata_path, "ata_charts")
+        # Establish the path for the folder charts will be exported to
 
-        if os.path.exists(pie_path):
-            shutil.rmtree(pie_path)
+        chart_path = os.path.join(ata_path, "ata_charts")
 
-        os.mkdir(pie_path)
+        # Create the path for our charts
 
-        graph_generator(final_result, pie_path)
+        os.mkdir(chart_path)
+
+        # Using graph_generator function we create and export all the charts to
+        # our designated path
+
+        graph_generator(final_result, chart_path)
+
+        # The path for our text model file
 
         result_path = os.path.join(ata_path, "ata_result.txt")
+
+        # Create a text file to write our models to it
 
         with open(result_path, "w") as f:
             f.write(str(final_an) + "\n-----------------------------------\n" +
                     str(result))
+
