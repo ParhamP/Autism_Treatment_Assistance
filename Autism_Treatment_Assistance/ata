@@ -640,6 +640,7 @@ def bar_char_generator(numbers1, numbers2, dest, name):
     plt.title('Chart for comparing Total and Matched Emotions')
 
     plt.xticks(index + bar_width, ('Joy', 'Anger', 'Fear', 'Disgust', "Sadness"))
+
     plt.legend()
 
     dest = os.path.join(dest, name)
@@ -976,4 +977,3 @@ if __name__ == '__main__':
         with open(result_path, "w") as f:
             f.write(str(final_an) + "\n-----------------------------------\n" +
                     str(result))
-
