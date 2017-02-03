@@ -84,14 +84,14 @@ Have your therapy video and API keys ready.
 
 ## History
 
-Originally a hackathon project at PennApps, University of Pennsylvania Winter 2017. Link to original project at Devpost: (Here)
+Originally a hackathon project at PennApps, University of Pennsylvania, Winter 2017. Link to original project at Devpost: [Here](https://devpost.com/software/autism-treatment-assistance> "Here")
 
 ## Future of ATA
 
-This project is still under improvement. The author is trying to work with an actuall psychologist to improve the program.
+This project is still under improvement. The author is trying to collaborate with an actuall psychologist to improve the application.
 
 ## Thanks
 
 I thank the people who conributed code and/or ideas:
 
-@aalireza
+[aalireza](https://github.com/aalireza> "aalireza")
