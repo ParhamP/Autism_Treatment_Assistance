@@ -8,7 +8,7 @@
 
 ## Description
 
-Autism Treatment Assistance introduces an advanced tool that assists pyschologists and therapists effectively treat a common autism symptom that makes it difficult for autistic people to interpret emotions and to give prpoper facial expressions when confronted with different emotions.
+Autism Treatment Assistance introduces an advanced tool that assists pyschologists and therapists effectively treat a common autism symptom that makes it difficult for autistic people to interpret emotions and to give prpoper facial expressions when confronted with different emotions. These emotions include: joy, sadness, fear, disgust, anger.
 
 
 ATA uses IBM Watson Tone Analyzer and Microsoft Emotion API to detect emotions in both speech and facial expressions of an autistic patient during a therapy session, and by comparing the two it will report to the therapist a detailed analysis and graphical representation of how the patient performed during the session and how in-sync the facial expressions were with correlation to the content of speech.
