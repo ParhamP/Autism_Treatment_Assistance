@@ -3,7 +3,7 @@
 <!-- <img align="center" src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/logo.png?raw=true" alt="..."> -->
 
 <p align="center">
-<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/test/images/logo.png?raw=true">
+<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/logo.png?raw=true">
 </p>
 
 ## Description
@@ -67,13 +67,17 @@ Have your therapy video and API keys ready.
 
 1- Just for the first time let the program (using ConfigParser) save your API credentials so you don't have to enter them each time. (Preserve the order and place them in a string)
 
-`ata -credentials "IBM_USERNAME, IBM_PASSWORD, IBM_TONE_USERNAME, IBM_TONE_PASSWORD, Microsfot_API_KEY"`
+`ata -credentials "IBM_USERNAME IBM_PASSWORD IBM_TONE_USERNAME IBM_TONE_PASSWORD Microsfot_API_KEY"`
 
-2- `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION
+2- `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
 
 3- A folder named ATA containing the analysis and gaphs is created in the destination that you chose.
 
 ## Samples
-<p align="center">
 
+<p align="center">
+<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/emotions_total.png?raw=true">
+<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/matchness.png?raw=true">
+<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/general_data.png?raw=true">
+<img src="https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/images/emotions_matched.png?raw=true">
 </p>
