@@ -819,6 +819,17 @@ def argument_handler():
     """
     Argparse argument handler.
 
+    Returns
+    -------
+    args.credentials:       str
+                            "The string that contains API key and credentials"
+
+    args.src_vid:           str
+
+    cred_path:              str
+
+    args.destination:       str
+
     """
     parser = argparse.ArgumentParser()
 
@@ -874,8 +885,10 @@ def ConfigParser_handler(credentials):
         config.write(config_file)
 
     if os.path.exists(config_path):
+
         print "Sucess! Your credentials were saved."
     else:
+
         print "Failed. Your credentials could not be saved."
 
 
@@ -977,3 +990,14 @@ if __name__ == '__main__':
         with open(result_path, "w") as f:
             f.write(str(final_an) + "\n-----------------------------------\n" +
                     str(result))
+
+        # Check to see if files in the folder were created
+
+        if os.path.exists(result_path):
+
+            print ('\033[94m' + "ATA: " +
+                   "Your model was generated at: " + result_path + '\033[0m')
+        else:
+
+            print ("ATA: " '\033[91m' +
+                   "Failed to generate your model." + '\033[0m')
