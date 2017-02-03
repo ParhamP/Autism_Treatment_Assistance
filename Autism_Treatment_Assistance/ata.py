@@ -29,6 +29,8 @@ import httplib
 import urllib
 import ConfigParser
 import shutil
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def video_to_audio(video_abs_path, audio_abs_path):
@@ -60,8 +62,10 @@ def audio_to_text(audio_abs_path, IBM_USERNAME, IBM_PASSWORD):
     data          str
     """
     r = sr.Recognizer()
+
     with sr.AudioFile(audio_abs_path) as f:
         audio = r.record(f)
+
     data = r.recognize_ibm(audio, username=IBM_USERNAME, password=IBM_PASSWORD)
     return data
 
@@ -84,7 +88,9 @@ def tone_json_maker(text_input, TONE_USERNAME, TONE_PASSWORD):
         username=TONE_USERNAME,
         password=TONE_PASSWORD,
         version='2016-05-19')
+
     jsonOutput = tone_analyzer.tone(text=text_input)
+
     return jsonOutput
 
 
@@ -109,6 +115,7 @@ def sentence_tone_maker(tones_list):
         if tones_list[i]["score"] > highest_score:
             highest_score = tones_list[i]["score"]
             best_tone = tones_list[i]["tone_name"]
+
     return best_tone
 
 
@@ -130,21 +137,29 @@ def sentence_tone_model(json_input):
 
     """
     dict = {"anger": [], "disgust": [], "fear": [], "joy": [], "sadness": []}
+
     sentences_number = len(json_input["sentences_tone"])
 
     for i in range(sentences_number):
         sentences_text = json_input["sentences_tone"][i]["text"]
+
         sentences_list = json_input["sentences_tone"][i]["tone_categories"][0]["tones"]
+
         if sentence_tone_maker(sentences_list) == "Anger":
             dict["anger"].append({sentences_text[:-1]: ()})
+
         elif sentence_tone_maker(sentences_list) == "Disgust":
             dict["disgust"].append({sentences_text[:-1]: ()})
+
         elif sentence_tone_maker(sentences_list) == "Fear":
             dict["fear"].append({sentences_text[:-1]: ()})
+
         elif sentence_tone_maker(sentences_list) == "Joy":
             dict["joy"].append({sentences_text[:-1]: ()})
+
         else:
             dict["sadness"].append({sentences_text[:-1]: ()})
+
     return dict
 
 
@@ -217,19 +232,30 @@ def time_stamps_adder(model_input, username, password, src_dir):
     searcher = audio_analyzer(username, password, src_dir)
 
     for i in model_input.keys():
+
         if model_input[i] != []:
+
             for j in model_input[i]:
+
                 tmp = ' '.join(filter((lambda x: "'" not in x),
                                j.keys()[0].split(" ")))
+
                 search_result = (list(searcher.audio_search(tmp)))
+
                 try:
                     stamp_tuple = search_result[0]['Result']
+
                     j[j.keys()[0]] = stamp_tuple
+
                     if stamp_tuple == ():
+
                         model_input[i].remove(j)
+
                 except IndexError:
+
                     model_input[i].remove(j)
                     continue
+
     return model_input
 
 
@@ -256,30 +282,42 @@ def picture_emotion(image_src, API_KEY):
 
     params = urllib.urlencode({
         # Request parameters
-            'outputStyle': 'perFrame',
+        'outputStyle': 'perFrame',
     })
     with open(image_src, 'rb') as f:
         data = f.read()
 
     try:
         conn = httplib.HTTPSConnection('westus.api.cognitive.microsoft.com')
+
         conn.request("POST", "/emotion/v1.0/recognize?%s" % params, data,
                      headers)
         response = conn.getresponse()
+
         data = ast.literal_eval(response.read())
+
         conn.close()
+
         emotion_dict = data[0]["scores"]
-        print emotion_dict.keys()
+
         highest_score = 0
+
         emotion_name = ""
+
         for i in emotion_dict.keys():
-            print i
+
             if emotion_dict[i] > highest_score:
+
                 highest_score = emotion_dict[i]
+
                 emotion_name = i
+
         if emotion_name == "happiness":
+
             emotion_name = "joy"
+
         return emotion_name
+
     except Exception:
         return "Not recognized"
 
@@ -298,8 +336,11 @@ def seconds_formatter(seconds):
     """
     if type(seconds) == str:
         seconds = float(seconds)
+
     minutes, seconds = divmod(floor(seconds), 60)
+
     hours, minutes = divmod(minutes, 60)
+
     if minutes < 10:
         minutes = "0" + str(int(minutes))
     else:
@@ -312,7 +353,9 @@ def seconds_formatter(seconds):
         seconds = "0" + str(int(seconds))
     else:
         seconds = int(seconds)
+
     formatted = "{}:{}:{}".format(hours, minutes, seconds)
+
     return formatted
 
 
@@ -325,7 +368,7 @@ def get_frame_emotion(video_src, image_dest, frame_time):
     video_src:      str
     image_dest:     str
     frame_time:     str
-                    It must be in form of HH:MM:SS (see seconds_formatter func.)
+                    It must be in form of HH:MM:SS (see seconds_formatter func)
     """
     popen("ffmpeg -y -ss {} -i {} -vframes 1 -q:v 2 {}".format(
         frame_time, video_src, image_dest), shell=True).communicate()
@@ -352,102 +395,84 @@ def face_emotion_adder(model_input, video_src, image_dest, API_KEY):
                         New and final model with face emotions added
     """
     for i in model_input.keys():
+
         if model_input[i] != []:
+
             for j in model_input[i]:
+
                 if j[j.keys()[0]]:
+
                     time_average = (j[j.keys()[0]][0] + j[j.keys()[0]][1]) / 2
+
                     time = seconds_formatter(time_average)
-                    print j[j.keys()[0]][0]
-                    print time
+
                     get_frame_emotion(video_src, image_dest, time)
+
                     a = picture_emotion(image_dest, API_KEY)
+
                     j[j.keys()[0]] = a
+
     return model_input
 
 
-def ConfigParser_handler(credentials):
+def final_analysis(model_input):
     """
-    It uses Configparser to add our API credentials saved for the user in the
-    their machine. A INI file called ".ata_credentials.ini" will be added in
-    the home directory of user. The parameter credentials should be a string
-    with API usernames and paswords seperated with spaces and in this order:
-    IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME, TONE_PASSWORD, Microsfot_API_KEY
+    "Change the format of the model so that the keys are now sentenced with
+    keys beng their face and speech content emotions."
 
-    Parameters
-    ----------
-    credentials:        str
-
-    """
-    cred_list = credentials.split(" ")
-    config = ConfigParser.ConfigParser()
-
-    config.add_section("Keys")
-    config.set("Keys", "IBM_USERNAME", cred_list[0])
-    config.set("Keys", "IBM_PASSWORD", cred_list[1])
-    config.set("Keys", "TONE_USERNAME", cred_list[2])
-    config.set("Keys", "TONE_PASSWORD", cred_list[3])
-    config.set("Keys", "Microsfot_API_KEY", cred_list[4])
-
-    config_path = os.path.join(os.path.expanduser("~"), ".ata_creds.ini")
-
-    with open(config_path, "wb") as config_file:
-        config.write(config_file)
-
-    if os.path.exists(config_path):
-        print "Sucess! Your credentials were saved."
-    else:
-        print "Failed. Your credentials could not be saved."
-
-
-def ConnfigParser_reader(cred_path):
-    """
-    This function gets the credential file's path that was made with
-    Configparser and reads it for the user.
-
-    Parameters
-    ----------
-    cred_path:      str
+    Parameter
+    ---------
+    model_input:        dict
 
     Returns
     -------
-    (IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
-     TONE_PASSWORD, Microsfot_API_KEY
+    final_dict:         dict
+    """
+    final_dict = {}
+
+    for i in model_input.keys():
+
+        if model_input[i] != []:
+
+            for j in model_input[i]:
+
+                final_dict[j.keys()[0]] = {"text": i, "face": j[j.keys()[0]]}
+
+    return final_dict
+
+
+def get_analysis(model_input):
+    """
+    Returns a model that consists of frequency of data of our final model.
+
+    Parameters
+    ----------
+    model_input:        dict
+                        Result of final_analysis function
+
+    Returns
+    -------
+    analysis_model:     dict
 
     """
-    config = ConfigParser.ConfigParser()
-    config.read(cred_path)
+    analysis_model = {"total": 0, "matched": 0, "unmatched": 0,
+                      "joy": [0, 0], "anger": [0, 0], "fear": [0, 0],
+                      "disgust": [0, 0], "sadness": [0, 0]}
 
-    IBM_USERNAME = config.get("Keys", "IBM_USERNAME")
-    IBM_PASSWORD = config.get("Keys", "IBM_PASSWORD")
-    TONE_USERNAME = config.get("Keys", "TONE_USERNAME")
-    TONE_PASSWORD = config.get("Keys", "TONE_PASSWORD")
-    Microsfot_API_KEY = config.get("Keys", "Microsfot_API_KEY")
+    for i in final_an.keys():
+        number_of_sentences = len(final_an.keys())
 
-    return(IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
-           TONE_PASSWORD, Microsfot_API_KEY)
+        analysis_model["total"] = number_of_sentences
 
+        if final_an[i]["text"] == final_an[i]["face"]:
+            analysis_model["matched"] += 1
+            analysis_model[final_an[i]["text"]][1] += 1
+        else:
+            analysis_model["unmatched"] += 1
 
-def argument_handler():
-    """
-    Argparse argument handler.
+        analysis_model[final_an[i]["text"]][0] += 1
 
-    """
-    parser = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group(required=True)
-
-    group.add_argument("-credentials", "--credentials",
-                       help="Command for saving API credentials", type=str)
-    group.add_argument("-v", "--src_vid", help="Therapy's recording video",
-                       type=str)
-
-    args = parser.parse_args()
-
-    cred_path = os.path.join(os.path.expanduser("~"), ".ata_creds.ini")
-
-    if args.src_vid:
-        if not os.path.exists(cred_path):
-            parser.error("The credentials file has not been created yet")
-    return (args.credentials, args.src_vid, cred_path)
+    return analysis_model
 
 
 def generator(src_vid, IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
@@ -486,6 +511,7 @@ def generator(src_vid, IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
     os.mkdir(ata_folder)
 
     src_audio = os.path.join(ata_folder, "audio.wav")
+
     src_image = os.path.join(ata_folder, "image.jpg")
 
     video_to_audio(src_vid, src_audio)
@@ -506,67 +532,387 @@ def generator(src_vid, IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
     return complete_model
 
 
-def final_analysis(model_input):
+def pi_char_generator(sizes, label_category, dest, name, title):
     """
-    "Change the format of the model so that the keys are now sentenced with
-    keys beng their face and speech content emotions."
+    Function for generating a custom pie chart using matplotlib.
 
-    Parameter
+    Paramters
     ---------
-    model_input:        dict
+    sizes:                  list
+                            A list that contains the sizes for the chart
+                            elements
+
+    label_category:         str
+                            Either matchness or emotions_total. Determines
+                            which kind of chart use for template.label_category
+
+    dest:                   str
+                            Destination of the chart
+
+    name:                   str
+                            name of the file with its extension (png, pdf, ...)
+
+    titleL                  str
+                            Title of the chart that goes on the top
 
     Returns
     -------
-    final_dict:         dict
+    -                       Creates a pie chart file
+
     """
-    final_dict = {}
-    for i in model_input.keys():
-        if model_input[i] != []:
-            for j in model_input[i]:
-                final_dict[j.keys()[0]] = {"text": i, "face": j[j.keys()[0]]}
-    return final_dict
+    if label_category == "matchness":
+        labels = 'Matched', 'Unmatched'
+        explode = (0, 0.2)
+
+    elif label_category == "emotions_total":
+        labels = 'joy', 'anger', 'fear', 'disgust', 'sadness'
+        explode = (0, 0, 0, 0, 0)
+
+    fig1, ax1 = plt.subplots()
+
+    ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+            shadow=True, startangle=90)
+
+    ax1.axis('equal')
+
+    plt.title(title, y=-0.1)
+
+    dest = os.path.join(dest, name)
+
+    plt.savefig(dest)
 
 
-def get_analysis(model_input):
+def bar_char_generator(numbers1, numbers2, dest, name):
     """
-    Returns a model that consists of frequency of data of our final model.
+    Function for generating a custom bar chart using matplotlib.
 
     Parameters
     ----------
-    model_input:        dict
+    number1:                list
+                            A list containing frequencies for total sentences
+                            for each emotion
+
+    number2:                list
+                            A list containing frequencies for matched sentences
+                            for each emotion
+
+    dest:                   str
+                            Destination of the chart
+
+    name:                   str
+                            name of the file with its extension (png, pdf, ...)
 
     Returns
     -------
-    analysis_model:     dict
+    -                       Creats a bar chart file
 
     """
-    analysis_model = {"total": 0, "matched": 0, "unmatched": 0,
-                      "joy": (0, 0), "anger": (0, 0), "fear": (0, 0),
-                      "disgust": (0, 0), "sadness": (0, 0)}
 
-    for i in final_an.keys():
-        number_of_sentences = len(final_an.keys())
+    n_groups = 5
 
-        analysis_model["total"] = number_of_sentences
+    means_frank = numbers1
 
-        if final_an[i]["text"] == final_an[i]["face"]:
-            analysis_model["matched"] += 1
-            analysis_model[final_an[i]["text"]][1] += 1
-        else:
-            analysis_model["unmatched"] += 1
+    means_guido = numbers2
 
-        analysis_model[final_an[i]["text"]][0] += 1
+    # create plot
+    fig, ax = plt.subplots()
 
-    return analysis_model
+    index = np.arange(n_groups)
+
+    bar_width = 0.35
+
+    opacity = 0.8
+
+    rects1 = plt.bar(index, means_frank, bar_width,
+                     alpha=opacity,
+                     color='b',
+                     label='Total')
+
+    rects2 = plt.bar(index + bar_width, means_guido, bar_width,
+                     alpha=opacity,
+                     color='g',
+                     label='Matched')
+
+    plt.xlabel('Emotions')
+
+    plt.ylabel('Frequency')
+
+    plt.title('Chart for comparing Total and Matched Emotions')
+
+    plt.xticks(index + bar_width, ('Joy', 'Anger', 'Fear', 'Disgust', "Sadness"))
+    plt.legend()
+
+    dest = os.path.join(dest, name)
+
+    plt.savefig(dest)
 
 
-def graph_generator(analysis_model):
+def total_emotion_calculator(analysis_model, category_number):
+    """
+    Given the analysis_model created by get_analysis function, returns a list
+    containing percentages of frequencies of the sentences whose emotions were
+    recognized in the text by Watson or all the sentences whose text tone
+    matched its face emotion.
 
+    Parameters
+    ----------
+    analysis_model:             dict
+                                created by get_analysis function
+
+    category_number:            int
+                                Eitehr 0 or 1. 0 refers to all sentences and 1
+                                refers to only sentences whose emotions were
+                                matched
+
+    Returns
+    -------
+    emotion_total_sizes:        list
+
+    """
+    joy_total = analysis_model["joy"][category_number]
+
+    anger_total = analysis_model["anger"][category_number]
+
+    fear_total = analysis_model["fear"][category_number]
+
+    disgust_total = analysis_model["disgust"][category_number]
+
+    total_sentences = analysis_model["total"]
+
+    # Find the percentages
+
+    joy_percent = joy_total / total_sentences
+
+    anger_percent = anger_total / total_sentences
+
+    fear_percent = fear_total / total_sentences
+
+    disgust_percent = disgust_total / total_sentences
+
+    # Find the proportionate size for each emotion
+
+    joy_size = int(round(joy_percent, 2) * 100)
+
+    anger_size = int(round(anger_percent, 2) * 100)
+
+    fear_size = int(round(fear_percent, 2) * 100)
+
+    disgust_size = int(round(disgust_percent, 2) * 100)
+
+    sad_size = abs((joy_size + anger_size + fear_size + disgust_size) - 100)
+
+    # Add the sizes to a list
+
+    emotion_total_sizes = [joy_size, anger_size, fear_size, disgust_size,
+                           sad_size]
+
+    return emotion_total_sizes
+
+
+def emotion_comparison_generator(analysis_model):
+    """
+    Given the analysis_model created by get_analysis function, returns a tuple
+    containing two lists that are number of frequencies of all the sentences
+    whose emotions were recognized in the text by Watson and all the sentences
+    whose text tone matched its face emotion.
+
+    Parameters
+    ----------
+    analysis_model:                         dict
+                                            created by get_analysis function
+
+    Returns
+    -------
+    (total_numbers, matched_numbers):       tuple
+                                            Contains total_numebrs and
+                                            matched numbers
+    """
+
+    # Find the toal sentences for each emotion
+
+    joy_total = analysis_model["joy"][0]
+
+    anger_total = analysis_model["anger"][0]
+
+    fear_total = analysis_model["fear"][0]
+
+    disgust_total = analysis_model["disgust"][0]
+
+    sadness_total = analysis_model["sadness"][0]
+
+    # Find the total matched sentences for each emotion
+
+    joy_matched = analysis_model["joy"][1]
+
+    anger_matched = analysis_model["anger"][1]
+
+    fear_matched = analysis_model["fear"][1]
+
+    disgust_matched = analysis_model["disgust"][1]
+
+    sadness_matched = analysis_model["sadness"][1]
+
+    # Add the total numbers to a lsit
+
+    total_numbers = [joy_total, anger_total, fear_total, disgust_total,
+                     sadness_total]
+
+    # Add the matched numbers to a lsit
+
+    matched_numbers = [joy_matched, anger_matched, fear_matched,
+                       disgust_matched, sadness_matched]
+
+    return(total_numbers, matched_numbers)
+
+
+def graph_generator(analysis_model, dest):
+    """
+    Gets information from analysis_model created by get_analysis function to
+    generate charts (pi_charts and bar charts).matched_numbers
+
+    Parameters
+    ----------
+    analysis_model:         dict
+
+    dest:                   str
+
+    Returns
+    -------
+    -                       Creates chart files in dest folder
+
+    """
+    matched = analysis_model["matched"]
+
+    unmatched = analysis_model["unmatched"]
+
+    matched_percent = matched / unmatched
+
+    matched_size = int(round(matched_percent, 2) * 100)
+
+    unmatched_size = abs(matched_size - 100)
+
+    matchness_sizes = [matched_size, unmatched_size]
+
+    pi_char_generator(matchness_sizes, "matchness", dest, "matchness.png",
+                      "Matched sentences vs Unmatched Sentences")
+
+    emotion_total_sizes = total_emotion_calculator(analysis_model, 0)
+
+    pi_char_generator(emotion_total_sizes, "emotions_total", dest,
+                      "emotions_total.png",
+                      "Ratio of all sentences based on speech's tone")
+
+    emotion_matched_sizes = total_emotion_calculator(analysis_model, 1)
+
+    pi_char_generator(emotion_matched_sizes, "emotions_total", dest,
+                      "emotions_matched.png",
+                      "Ratio of matched sentences based on speech's tone")
+
+    numbers = emotion_comparison_generator(analysis_model)
+
+    bar_char_generator(numbers[0], numbers[1],
+                       dest, "general_data.png")
+
+
+def argument_handler():
+    """
+    Argparse argument handler.
+
+    """
+    parser = argparse.ArgumentParser()
+
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument("-credentials", "--credentials",
+                       help="Command for saving API credentials", type=str)
+    group.add_argument("-v", "--src_vid", help="Therapy's recording video",
+                       type=str)
+    parser.add_argument("-d", "--destination", help="result destination",
+                        type=str)
+
+    args = parser.parse_args()
+
+    cred_path = os.path.join(os.path.expanduser("~"), ".ata_creds.ini")
+
+    if args.src_vid:
+        if not os.path.exists(cred_path):
+            parser.error("The credentials file has not been created yet")
+        if not args.destination:
+            parser.error("Please enter a destination for generated result.")
+
+    return (args.credentials, args.src_vid, cred_path, args.destination)
+
+
+def ConfigParser_handler(credentials):
+    """
+    It uses Configparser to add our API credentials saved for the user in the
+    their machine. A INI file called ".ata_credentials.ini" will be added in
+    the home directory of user. The parameter credentials should be a string
+    with API usernames and paswords seperated with spaces and in this order:
+    IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME, TONE_PASSWORD, Microsfot_API_KEY
+
+    Parameters
+    ----------
+    credentials:        str
+
+    """
+    cred_list = credentials.split(" ")
+
+    config = ConfigParser.ConfigParser()
+
+    config.add_section("Keys")
+    config.set("Keys", "IBM_USERNAME", cred_list[0])
+    config.set("Keys", "IBM_PASSWORD", cred_list[1])
+    config.set("Keys", "TONE_USERNAME", cred_list[2])
+    config.set("Keys", "TONE_PASSWORD", cred_list[3])
+    config.set("Keys", "Microsfot_API_KEY", cred_list[4])
+
+    config_path = os.path.join(os.path.expanduser("~"), ".ata_creds.ini")
+
+    with open(config_path, "wb") as config_file:
+        config.write(config_file)
+
+    if os.path.exists(config_path):
+        print "Sucess! Your credentials were saved."
+    else:
+        print "Failed. Your credentials could not be saved."
+
+
+def ConnfigParser_reader(cred_path):
+    """
+    This function gets the credential file's path that was made with
+    Configparser and reads it for the user.
+
+    Parameters
+    ----------
+    cred_path:      str
+
+    Returns
+    -------
+    (IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
+     TONE_PASSWORD, Microsfot_API_KEY
+
+    """
+    config = ConfigParser.ConfigParser()
+
+    config.read(cred_path)
+
+    IBM_USERNAME = config.get("Keys", "IBM_USERNAME")
+
+    IBM_PASSWORD = config.get("Keys", "IBM_PASSWORD")
+
+    TONE_USERNAME = config.get("Keys", "TONE_USERNAME")
+
+    TONE_PASSWORD = config.get("Keys", "TONE_PASSWORD")
+
+    Microsfot_API_KEY = config.get("Keys", "Microsfot_API_KEY")
+
+    return(IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
+           TONE_PASSWORD, Microsfot_API_KEY)
 
 
 if __name__ == '__main__':
-
-    credentials, src_vid, cred_path = argument_handler()
+    credentials, src_vid, cred_path, destination = argument_handler()
 
     if credentials:
         ConfigParser_handler(credentials)
@@ -577,10 +923,26 @@ if __name__ == '__main__':
 
         result = generator(src_vid, IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
                            TONE_PASSWORD, Microsfot_API_KEY)
-        # result = {'anger': [{u'wrong': 'Not recognized'}, {u"Perot sometimes they get a feeling she's": 'neutral'}, {u"ten to decide which restaurant we're going to end scion has to decide a": 'neutral'}, {u"so you don't lines around to pick because you like me and that is better": 'joy'}, {u'you tied Macias': ()}, {u"why don't you like Bosnia": 'joy'}], 'joy': [{u"is there any place that we take you that you don't like that makes you feel anxious": 'neutral'}, {u'we did': 'neutral'}, {u'we play leann I is I get picked to': 'neutral'}, {u'when we do that': 'neutral'}, {u'or do you rather somebody else pick it': 'neutral'}, {u'there were other': 'neutral'}, {u'you were saying': 'neutral'}, {u"round pick somebody's opinion as good restaurants that I get that he would say was to dog food": 'neutral'}, {u'and the best parents': 'neutral'}, {u'of a boy could ever have': 'neutral'}, {u'do you want a pony': 'neutral'}, {u'that was very sweet Jane and thank you': 'joy'}, {u'pretty much pretty much': ()}, {u'I like your honesty': 'neutral'}, {u"do you do something that is I will pick a restaurant that you'll like": 'neutral'}, {u'picking': 'neutral'}, {u'well': 'Not recognized'}, {u"kinda like you know I'm glad to get a shot": 'Not recognized'}, {u'actually it': 'Not recognized'}, {u'yes': 'Not recognized'}, {u'when he gets to choose a restaurant he always': 'Not recognized'}, {u"thanks Bosnia's month yes razzia": 'Not recognized'}, {u'I see': 'Not recognized'}, {u'well': ()}, {u'is acting or yeah': 'Not recognized'}], 'fear': [{u'you know I say why why would anyone silence I': ()}, {u'so okay securities': 'Not recognized'}, {u'no but really what why yeah why would you rather be naked than than Sonatine': 'Not recognized'}, {u'lying in terror': 'Not recognized'}, {u'or do you just not like the sound': ()}], 'sadness': [{u'whenever': 'Not recognized'}, {u'whenever': 'Not recognized'}, {u'and': 'Not recognized'}, {u'whenever': 'Not recognized'}, {u'wherever': 'Not recognized'}, {u'wherever': 'Not recognized'}, {u'and': 'Not recognized'}, {u'whenever': 'Not recognized'}, {u'arrow': 'Not recognized'}, {u'and': 'Not recognized'}, {u'and': 'Not recognized'}, {u'right': 'Not recognized'}, {u'every': 'Not recognized'}], 'disgust': []}
+
         final_an = final_analysis(result)
 
-        result_path = os.path.join(os.path.dirname(src_vid), "ata_result.txt")
+        final_result = get_analysis(final_an)
+
+        ata_path = os.path.join(destination, "ATA")
+
+        os.mkdir(ata_path)
+
+        pie_path = os.path.join(ata_path, "ata_charts")
+
+        if os.path.exists(pie_path):
+            shutil.rmtree(pie_path)
+
+        os.mkdir(pie_path)
+
+        graph_generator(final_result, pie_path)
+
+        result_path = os.path.join(ata_path, "ata_result.txt")
 
         with open(result_path, "w") as f:
-            f.write(str(final_an))
+            f.write(str(final_an) + "\n-----------------------------------\n" +
+                    str(result))
