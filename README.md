@@ -17,32 +17,31 @@ ATA uses IBM Watson Tone Analyzer and Microsoft Emotion API to detect emotions i
 
 1. Video to Audio to Speech:
 
-The video of the therapy gets converted to audio and then the speech of the audio gets converted to text using IBM Watson Speech-to-Text API.
+	* The video of the therapy gets converted to audio and then the speech of the audio gets converted to text using IBM Watson Speech-to-Text API.
 
 2. Analyzing the Content of Speech:
 
-The program uses IBM Watson Tone Analyzer to determine the dominant emotion in the content of each sentence.
+	* The program uses IBM Watson Tone Analyzer to determine the dominant emotion in the content of each sentence.
 
 3. Searching and Indexing Audio:
 
-It then uses SimpleAudioIndexer to search through the audio to index when those sentences exactly 
-happended.
+	* It then uses SimpleAudioIndexer to search through the audio to index when those sentences exactly happended.
 
 4. Recognize the emotion in Face during Timestamped Sentences
 
-Using the saved timestamps, the program uses Microsoft Emotion API to detect the dominant face emotions during those sentences.
+	* Using the saved timestamps, the program uses Microsoft Emotion API to detect the dominant face emotions during those sentences.
 
 5. Build a model
 
-A comprehensive model is created that consists of sentences and their coressponding face and speech emotions. 
+	* A comprehensive model is created that consists of sentences and their coressponding face and speech emotions. 
 
 6. Turn Data into Insights
 
-Returns various analysis and versions of the model.
+	* Returns various analysis and versions of the model.
 
 7. Graphical and Statistical Representation of Data
 
-Uses matplotlib and numpy libraries to draw statistical and graphical representations of data
+	* Uses matplotlib and numpy libraries to draw statistical and graphical representations of data
 
 
 ## Get Started
@@ -66,11 +65,10 @@ Uses matplotlib and numpy libraries to draw statistical and graphical representa
 Have your therapy video and API keys ready.
 
 1. Just for the first time let the program (using ConfigParser) save your API credentials so you don't have to enter them each time. (Preserve the order and place them in a string)
+	* `ata -credentials "IBM_USERNAME IBM_PASSWORD IBM_TONE_USERNAME IBM_TONE_PASSWORD Microsfot_API_KEY"`
 
-`ata -credentials "IBM_USERNAME IBM_PASSWORD IBM_TONE_USERNAME IBM_TONE_PASSWORD Microsfot_API_KEY"`
-
-2. `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
-
+2. Enter:
+	* `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
 
 A folder named ATA containing the analysis and gaphs is created in the destination that you chose.
 
