@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='Autism_Treatment_Assistance',
     packages=['Autism_Treatment_Assistance'],
-    version='0.3',
+    version='0.4',
     scripts=['Autism_Treatment_Assistance/ata'],
     description="Employs data science and deep learning to assist therapists treat a common autism symptom that involves interpretation and correlation of facial and speech emotions",
     long_description="Please visist Autism Treatment Assistance on Github: https://github.com/ParhamP/Autism_Treatment_Assistance",

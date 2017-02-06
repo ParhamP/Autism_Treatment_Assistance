@@ -173,7 +173,7 @@ class audio_analyzer(object):
         self.indexer.index_audio()
 
     def audio_search(self, query, audio_basename=None,
-                     part_of_bigger_word=False, timing_error=0.1):
+                     timing_error=0.1):
         """
         A generator that searches for the `query` within the audiofiles of the
         src_dir.
@@ -205,9 +205,8 @@ class audio_analyzer(object):
                          of the tuple is the starting second of `query` and
                          the last element is the ending second of `query`
         """
-        return self.indexer.search(query, audio_basename=None,
-                                   part_of_bigger_word=False,
-                                   timing_error=0.5)
+        return self.indexer.search_gen(query, audio_basename=None,
+                                       timing_error=0.5)
 
 
 def time_stamps_adder(model_input, username, password, src_dir):
