@@ -165,11 +165,12 @@ def sentence_tone_model(json_input):
 
 class audio_analyzer(object):
 
-    def __init__(self, username, password, src_dir):
+    def __init__(self, src_dir, mode, username, password):
         self.username = username
         self.password = password
         self.src_dir = src_dir
-        self.indexer = sai(username, password, src_dir)
+        self.mode = mode
+        self.indexer = sai(src_dir, mode, username, password)
         self.indexer.index_audio()
 
     def audio_search(self, query, audio_basename=None,
@@ -228,7 +229,7 @@ def time_stamps_adder(model_input, username, password, src_dir):
     -------
     model_input:        dict
     """
-    searcher = audio_analyzer(username, password, src_dir)
+    searcher = audio_analyzer(src_dir, "ibm", username, password)
 
     for i in model_input.keys():
 
