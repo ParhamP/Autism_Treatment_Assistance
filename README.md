@@ -48,9 +48,9 @@ ATA uses IBM Watson Tone Analyzer and Microsoft Emotion API to detect emotions i
 
 ### Dependencies
 
-- IBM Watson Speech to Text API Username and Password: [Here](https://www.ibm.com/watson/developercloud/doc/getting_started/gs-credentials.shtml> "IBM_GetStarted")
-- IBM Watson Tone Analyzer API Username and Passowrd: [Here](https://console.ng.bluemix.net/registration/?target=/catalog/services/tone-analyzer/> "IBM_GetStarted")
-- Microsoft Emotion API Key: [Here](https://www.microsoft.com/cognitive-services/en-us/sign-up> "Microsoft_GetStarted")
+- IBM Watson Speech to Text API Username and Password: [Here](https://www.ibm.com/watson/developercloud/doc/getting_started/gs-credentials.shtml "IBM_GetStarted")
+- IBM Watson Tone Analyzer API Username and Passowrd: [Here](https://console.ng.bluemix.net/registration/?target=/catalog/services/tone-analyzer/ "IBM_GetStarted")
+- Microsoft Emotion API Key: [Here](https://www.microsoft.com/cognitive-services/en-us/sign-up "Microsoft_GetStarted")
 - SimpleAudioIndexer
 - matplotlib
 - numpy
@@ -83,7 +83,7 @@ A folder named ATA containing the analysis and gaphs is created in the destinati
 
 ## History
 
-Originally a hackathon project at PennApps, University of Pennsylvania, Winter 2017. Link to original project at Devpost: [Here](https://devpost.com/software/autism-treatment-assistance> "Here")
+Originally a hackathon project at PennApps, University of Pennsylvania, Winter 2017. Link to original project at Devpost: [Here](https://devpost.com/software/autism-treatment-assistance "Here")
 
 ## Future of ATA
 
@@ -93,12 +93,12 @@ This project is still under improvement. The author is trying to collaborate wit
 
 I thank the people who conributed code and/or ideas:
 
-[aalireza](https://github.com/aalireza> "aalireza")
+[aalireza](https://github.com/aalireza "aalireza")
 
 ## Author
 
-[Parham Pourdavood](http://www.pourdavood.net> "Author")
+[Parham Pourdavood](http://www.pourdavood.net "Author")
 
 ## License
 
-[Apache-2.0](https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/LICENSE> "License")
+[Apache-2.0](https://github.com/ParhamP/Autism_Treatment_Assistance/blob/master/LICENSE "License")
