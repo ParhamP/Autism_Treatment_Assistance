@@ -223,7 +223,7 @@ def time_stamps_adder(model_input, username, password, src_dir):
                         Returned by sentence_tone_model function
     username:           str
     password:           str
-    src_dr:             str
+    src_dir:             str
                         The directory that the audio converted from orig. video
     Returns
     -------
@@ -233,7 +233,7 @@ def time_stamps_adder(model_input, username, password, src_dir):
 
     for i in model_input.keys():
 
-        if model_input[i] != []:
+        if model_input[i]:
 
             for j in model_input[i]:
 
@@ -386,7 +386,7 @@ def face_emotion_adder(model_input, video_src, image_dest, API_KEY):
     ----------
     model_input:        dict
     video_src:          str
-    image_Dest:         str
+    image_dest:         str
     API_KEY:            str
                         Microsoft Emotion API Key
     Returns
@@ -396,7 +396,7 @@ def face_emotion_adder(model_input, video_src, image_dest, API_KEY):
     """
     for i in model_input.keys():
 
-        if model_input[i] != []:
+        if model_input[i]:
 
             for j in model_input[i]:
 
@@ -432,7 +432,7 @@ def final_analysis(model_input):
 
     for i in model_input.keys():
 
-        if model_input[i] != []:
+        if model_input[i]:
 
             for j in model_input[i]:
 
@@ -441,13 +441,13 @@ def final_analysis(model_input):
     return final_dict
 
 
-def get_analysis(model_input):
+def get_analysis(final_an):
     """
     Returns a model that consists of frequency of data of our final model.
 
     Parameters
     ----------
-    model_input:        dict
+    final_an:        dict
                         Result of final_analysis function
 
     Returns
@@ -588,11 +588,11 @@ def bar_char_generator(numbers1, numbers2, dest, name):
 
     Parameters
     ----------
-    number1:                list
+    numbers1:                list
                             A list containing frequencies for total sentences
                             for each emotion
 
-    number2:                list
+    numbers2:                list
                             A list containing frequencies for matched sentences
                             for each emotion
 
@@ -758,12 +758,12 @@ def emotion_comparison_generator(analysis_model):
     total_numbers = [joy_total, anger_total, fear_total, disgust_total,
                      sadness_total]
 
-    # Add the matched numbers to a lsit
+    # Add the matched numbers to a list
 
     matched_numbers = [joy_matched, anger_matched, fear_matched,
                        disgust_matched, sadness_matched]
 
-    return(total_numbers, matched_numbers)
+    return total_numbers, matched_numbers
 
 
 def graph_generator(analysis_model, dest):
@@ -852,7 +852,7 @@ def argument_handler():
         if not args.destination:
             parser.error("Please enter a destination for generated result.")
 
-    return (args.credentials, args.src_vid, cred_path, args.destination)
+    return args.credentials, args.src_vid, cred_path, args.destination
 
 
 def ConfigParser_handler(credentials):
@@ -860,8 +860,8 @@ def ConfigParser_handler(credentials):
     It uses Configparser to add our API credentials saved for the user in the
     their machine. A INI file called ".ata_credentials.ini" will be added in
     the home directory of user. The parameter credentials should be a string
-    with API usernames and paswords seperated with spaces and in this order:
-    IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME, TONE_PASSWORD, Microsfot_API_KEY
+    with API usernames and passwords separated with spaces and in this order:
+    IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME, TONE_PASSWORD, Microsoft_API_KEY
 
     Parameters
     ----------
@@ -904,7 +904,7 @@ def ConnfigParser_reader(cred_path):
     Returns
     -------
     (IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
-     TONE_PASSWORD, Microsfot_API_KEY
+     TONE_PASSWORD, Microsoft_API_KEY
 
     """
     config = ConfigParser.ConfigParser()
@@ -919,7 +919,7 @@ def ConnfigParser_reader(cred_path):
 
     TONE_PASSWORD = config.get("Keys", "TONE_PASSWORD")
 
-    Microsfot_API_KEY = config.get("Keys", "Microsfot_API_KEY")
+    Microsfot_API_KEY = config.get("Keys", "Microsoft_API_KEY")
 
     return(IBM_USERNAME, IBM_PASSWORD, TONE_USERNAME,
            TONE_PASSWORD, Microsfot_API_KEY)
@@ -947,7 +947,6 @@ if __name__ == '__main__':
         final_an = final_analysis(result)
 
         final_result = get_analysis(final_an)
-
 
         # Set the path where we export the result to
 
