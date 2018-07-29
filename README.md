@@ -70,7 +70,7 @@ Have your therapy video and API keys ready.
 2. Enter:
 	* `ata -v ABS_PATH_TO_VIDEO -d ABS_PATH_FOR_DESTINATION`
 
-A folder named ATA containing the analysis and gaphs is created in the destination that you chose.
+A folder named ATA containing the analysis and graphs is created in the destination that you chose.
 
 ## Samples
 
